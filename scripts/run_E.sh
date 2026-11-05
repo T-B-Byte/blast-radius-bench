@@ -1,0 +1,9 @@
+#!/bin/bash
+# Recall fix E (conservative prune), local machine: cost-xray + grip in parallel, port 11435, num_ctx 24576
+cd .
+M=hf.co/google/gemma-4-26B-A4B-it-qat-q4_0-gguf
+for R in cost-xray grip; do
+ ( echo "=== START $(date) E $R local machine ===" >> logs/run_26B-A4B_E_heldout_v2_$R.log
+   .venv/bin/python bench/agent.py --model $M --setting E --split heldout --repo $R --limit 50 --tag _v2 --host http://127.0.0.1:11435 >> logs/run_26B-A4B_E_heldout_v2_$R.log 2>&1 && echo DONE > logs/s1_E_${R}_done ) &
+done
+wait
